@@ -140,7 +140,6 @@ app.put("/account" , verifyExistsAccountCPF,  (req, res) =>{
 app.get("/account" , verifyExistsAccountCPF,  (req, res) =>{
     const { customer } = req;
 
-
     return res.json(customer);
 })
 
