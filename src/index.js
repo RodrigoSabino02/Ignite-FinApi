@@ -68,7 +68,7 @@ app.post("/account", (req, res) => {
 
 
 // buscar o extrato do usuario 
-app.get("/statement/:cpf", verifyExistsAccountCPF,  (req, res) => {
+app.get("/statement", verifyExistsAccountCPF,  (req, res) => {
     const { customer } = req;
     return res.json(customer.statement);
 });
@@ -91,6 +91,7 @@ app.post("/deposit", verifyExistsAccountCPF, (req, res) => {
 
 });
 
+// realizar um saque
 app.post("/withdraw", verifyExistsAccountCPF, (req, res) => {
     const { amount } = req.body;
     const { customer } = req;
@@ -112,5 +113,17 @@ app.post("/withdraw", verifyExistsAccountCPF, (req, res) => {
     return res.status(201).send();
 
 })
+
+// buscar extrato bancorio por data
+app.get("/statement/date", verifyExistsAccountCPF,  (req, res) => {
+    const { customer } = req;
+    const { date } = req.query;
+
+    const dateFormat = new Date(date + " 00:00");
+
+    const statement = customer.statement.filter((statement) => statement.createdAt.toDateString() === new Date(dateFormat).toDateString());
+
+    return res.json(statement);
+});
 
 app.listen(3333);
