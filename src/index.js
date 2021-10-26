@@ -66,11 +66,48 @@ app.post("/account", (req, res) => {
     
 });
 
+// Atualizar os dados do cliente
+app.put("/account" , verifyExistsAccountCPF,  (req, res) =>{
+    const { name } = req.body;
+    const { customer } = req;
+
+    customer.name = name;
+
+    return res.status(201).send();
+})
+
+// obter os dados do cliente
+app.get("/account" , verifyExistsAccountCPF,  (req, res) =>{
+    const { customer } = req;
+
+    return res.json(customer);
+})
+
+// Deletar a conta
+app.delete("/account", verifyExistsAccountCPF, (req, res) =>{
+    const { customer } = req;
+
+    customers.splice(customer, 1);
+
+    return res.status(200).json(customers);
+})
 
 // buscar o extrato do usuario 
 app.get("/statement", verifyExistsAccountCPF,  (req, res) => {
     const { customer } = req;
     return res.json(customer.statement);
+});
+
+// buscar extrato bancorio por data
+app.get("/statement/date", verifyExistsAccountCPF,  (req, res) => {
+    const { customer } = req;
+    const { date } = req.query;
+
+    const dateFormat = new Date(date + " 00:00");
+
+    const statement = customer.statement.filter((statement) => statement.createdAt.toDateString() === new Date(dateFormat).toDateString());
+
+    return res.json(statement);
 });
 
 // realizar um deposito
@@ -112,35 +149,6 @@ app.post("/withdraw", verifyExistsAccountCPF, (req, res) => {
 
     return res.status(201).send();
 
-})
-
-// buscar extrato bancorio por data
-app.get("/statement/date", verifyExistsAccountCPF,  (req, res) => {
-    const { customer } = req;
-    const { date } = req.query;
-
-    const dateFormat = new Date(date + " 00:00");
-
-    const statement = customer.statement.filter((statement) => statement.createdAt.toDateString() === new Date(dateFormat).toDateString());
-
-    return res.json(statement);
-});
-
-// Atualizar os dados do cliente
-app.put("/account" , verifyExistsAccountCPF,  (req, res) =>{
-    const { name } = req.body;
-    const { customer } = req;
-
-    customer.name = name;
-
-    return res.status(201).send();
-})
-
-// obter os dados do cliente
-app.get("/account" , verifyExistsAccountCPF,  (req, res) =>{
-    const { customer } = req;
-
-    return res.json(customer);
 })
 
 app.listen(3333);
